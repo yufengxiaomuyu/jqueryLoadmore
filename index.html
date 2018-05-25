@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Load More</title>
+		<style>
+          	ul,li {
+          		margin: 0;
+          		padding: 0;
+          	}
+            #ct li {
+            	list-style: none;
+              padding: 10px;
+              margin-top: 10px;
+              border: 1px solid #ccc;
+              cursor: pointer; 
+            }
+            #ct li:hover {
+              background: green;
+              color: white;
+            }
+            .btn {
+            	text-align: center;
+            }
+            .btn #load-more {
+            	display: inline-block;
+            	margin: 10px auto;
+              padding: 10px; 
+            	border: 1px solid #E27272;
+            	border-radius: 3px;
+            	text-decoration: none;
+              color: #E27272;
+              cursor: pointer;
+            }
+            .btn #load-more:hover {
+              background-color: green;
+              color: #fff; 
+            }
+		</style>
+        
+        <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+	</head>
+	<body>
+		<ul id="ct">
+		</ul>
+		<div class="btn">
+		    <a id="load-more" href="#">加载更多</a>	
+		</div>
+		
+        <script>
+            
+            /*定义接口
+            1.url:/loadMore
+            2.入参：{index:0,len:5}
+            3.回参：
+            {
+                status: 1,//1代表正常，0代表出错
+                news: [6,7,8,9,10]     
+            }
+            */
+            var curIndex = 0,length = 2;
+            var isLoading = false;
+
+            $(".btn #load-more").on("click",function(){
+              if (isLoading) return;
+              isLoading = true;
+              $.ajax({url:"/loadMore",method:"get",data:{index:curIndex,len:length}}).done(function(data){
+                var data = JSON.parse(data)
+                if (data.status === 1) {
+                  appendHtml(data.news);
+                  curIndex += length;
+                  isLoading = false; 
+                } else {
+                  alert("获取新闻出错");
+                };
+              }).fail(function(){
+                  alret("系统异常");
+              });
+            });
+
+            function appendHtml(data) {
+              var html = ""; 
+              $.each(data,function(){
+                html += "<li>" + this + "</li>"
+              });
+              $("#ct").append(html);          
+            };
+             
+
+	    </script>
+
+	</body>
+	</html>	
